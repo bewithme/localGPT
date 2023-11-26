@@ -54,8 +54,12 @@ ADD prompt_template_utils.py prompt_template_utils.py
 ADD run_localGPT.py run_localGPT.py
 ADD run_localGPT_API.py run_localGPT_API.py
 ADD utils.py utils.py
+#To fix IndexError: list index out of range when you run  python ingest.py
+RUN apt-get install ffmpeg libsm6 libxext6  -y
+
 
 # HF_ENDPOINT=https://hf-mirror.com python ingest.py
+# HF_ENDPOINT=https://hf-mirror.com python run_localGPT.py
 #sudo docker build -t='registry.cn-hangzhou.aliyuncs.com/bewithmeallmylife/local-gpt-app-cuda-11.7.1:1.0.0' .
 
-#sudo docker run --net=host  --gpus '"device=0,1"' --privileged -it -d registry.cn-hangzhou.aliyuncs.com/bewithmeallmylife/local-gpt-app-cuda-11.7.1:1.0.0
+#sudo docker run --net=host  --gpus '"device=0,1"' --privileged -v /home/xuwenfeng/app-sourcecode/LLM/localGPT:/app/localGPT -v /home/xuwenfeng/app-sourcecode/LLM/cache:/root/.cache -it -d registry.cn-hangzhou.aliyuncs.com/bewithmeallmylife/local-gpt-app-cuda-11.7.1:1.0.0
