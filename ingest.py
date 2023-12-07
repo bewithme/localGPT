@@ -6,6 +6,7 @@ import click
 import torch
 from langchain.docstore.document import Document
 from langchain.embeddings import HuggingFaceInstructEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import Language, RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
 
@@ -38,7 +39,7 @@ def load_single_document(file_path: str) -> Document:
        return loader.load()[0]
     except Exception as ex:
        file_log('%s loading error: \n%s' % (file_path, ex))
-       return None 
+       return None
 
 def load_document_batch(filepaths):
     logging.info("Loading document batch")
@@ -93,7 +94,7 @@ def load_documents(source_dir: str) -> list[Document]:
                 docs.extend(contents)
             except Exception as ex:
                 file_log('Exception: %s' % (ex))
-                
+
     return docs
 
 
@@ -153,11 +154,13 @@ def main(device_type):
     logging.info(f"Loaded {len(documents)} documents from {SOURCE_DIRECTORY}")
     logging.info(f"Split into {len(texts)} chunks of text")
 
-    # Create embeddings
-    embeddings = HuggingFaceInstructEmbeddings(
-        model_name=EMBEDDING_MODEL_NAME,
-        model_kwargs={"device": device_type},
-    )
+    # Create default embeddings
+    #embeddings = HuggingFaceInstructEmbeddings(
+    #    model_name=EMBEDDING_MODEL_NAME,
+    #    model_kwargs={"device": device_type},
+    #)
+
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME, model_kwargs={"device": device_type})
     # change the embedding type here if you are running into issues.
     # These are much smaller embeddings and will work for most appications
     # If you use HuggingFaceEmbeddings, make sure to also use the same in the
@@ -171,7 +174,7 @@ def main(device_type):
         persist_directory=PERSIST_DIRECTORY,
         client_settings=CHROMA_SETTINGS,
     )
-   
+
 
 
 if __name__ == "__main__":

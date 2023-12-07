@@ -40,6 +40,7 @@ RUN pip uninstall torchvision -y
 RUN pip install torch==2.0.1  -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com
 #修复ImportError: Using `load_in_8bit=True` requires Accelerate:
 RUN pip install transformers==4.31.0  -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com
+RUN pip install torchvision==0.15.2  -i http://mirrors.aliyun.com/pypi/simple --trusted-host mirrors.aliyun.com
 
 WORKDIR /app/localGPT
 ADD localGPTUI localGPTUI
@@ -57,7 +58,7 @@ ADD utils.py utils.py
 RUN apt-get install ffmpeg libsm6 libxext6  -y
 
 
-# HF_ENDPOINT=https://hf-mirror.com python ingest.py
+# HF_ENDPOINT=https://hf-mirror.com python ingest.py --device_type cuda
 # HF_ENDPOINT=https://hf-mirror.com python run_localGPT.py --device_type cuda
 #sudo docker build -t='registry.cn-hangzhou.aliyuncs.com/bewithmeallmylife/local-gpt-app-cuda-11.4.0:1.0.0' .
 

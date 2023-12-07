@@ -5,6 +5,7 @@ import torch
 import utils
 from langchain.chains import RetrievalQA
 from langchain.embeddings import HuggingFaceInstructEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms import HuggingFacePipeline
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler  # for streaming response
 from langchain.callbacks.manager import CallbackManager
@@ -116,7 +117,8 @@ def retrieval_qa_pipline(device_type, use_history, promptTemplate_type="llama"):
     - The QA system retrieves relevant documents using the retriever and then answers questions based on those documents.
     """
 
-    embeddings = HuggingFaceInstructEmbeddings(model_name=EMBEDDING_MODEL_NAME, model_kwargs={"device": device_type})
+    #embeddings = HuggingFaceInstructEmbeddings(model_name=EMBEDDING_MODEL_NAME, model_kwargs={"device": device_type})
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME, model_kwargs={"device": device_type})
     # uncomment the following line if you used HuggingFaceEmbeddings in the ingest.py
     # embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME)
 
@@ -266,7 +268,7 @@ def main(device_type, show_sources, use_history, model_type, save_qa):
                 print("\n> " + document.metadata["source"] + ":")
                 print(document.page_content)
             print("----------------------------------SOURCE DOCUMENTS---------------------------")
-        
+
         # Log the Q&A to CSV only if save_qa is True
         if save_qa:
             utils.log_to_csv(query, answer)
