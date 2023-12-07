@@ -59,7 +59,7 @@ RUN apt-get install ffmpeg libsm6 libxext6  -y
 
 
 # HF_ENDPOINT=https://hf-mirror.com python ingest.py --device_type cuda
-# HF_ENDPOINT=https://hf-mirror.com python run_localGPT.py --device_type cuda
+# HF_ENDPOINT=https://hf-mirror.com python run_localGPT.py --show_sources --device_type cuda
 #sudo docker build -t='registry.cn-hangzhou.aliyuncs.com/bewithmeallmylife/local-gpt-app-cuda-11.4.0:1.0.0' .
 
-#sudo docker run --net=host  --gpus '"device=0,1"' --privileged -v /home/xuwenfeng/app-sourcecode/LLM/localGPT:/app/localGPT -v /home/xuwenfeng/app-sourcecode/LLM/cache:/root/.cache -it -d registry.cn-hangzhou.aliyuncs.com/bewithmeallmylife/local-gpt-app-cuda-11.4.0:1.0.0
+#sudo docker run --net=host  --gpus '"device=0,1"' --privileged -v /home/xuwenfeng/app-sourcecode/LLM/nltk_data:/root/nltk_data  -v /home/xuwenfeng/app-sourcecode/LLM/localGPT:/app/localGPT -v /home/xuwenfeng/app-sourcecode/LLM/cache:/root/.cache -it -d registry.cn-hangzhou.aliyuncs.com/bewithmeallmylife/local-gpt-app-cuda-11.4.0:1.0.0
