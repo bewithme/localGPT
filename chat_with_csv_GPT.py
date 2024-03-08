@@ -2,15 +2,25 @@ from langchain import HuggingFacePipeline
 
 from transformers import AutoTokenizer
 
+from langchain.embeddings import HuggingFaceEmbeddings
+
+from langchain.document_loaders.csv_loader import CSVLoader
+
+from langchain.vectorstores import Chroma
+
+from langchain.chains import RetrievalQA
+
 import transformers
 
 import torch
 
-from pandasai import Agent
+import textwrap
+from chromadb.config import Settings
+import os
 
-from pandasai.llm import LangchainLLM
+# model = "meta-llama/Llama-2-7b-chat-hf"
+model = "models/models--hfl--chinese-alpaca-2-13b/snapshots/4b896a8bb507af3107517d2a36eb611675db3ed6"
 
-model = "meta-llama/Llama-2-7b-chat-hf"
 
 tokenizer = AutoTokenizer.from_pretrained(model)
 
@@ -40,12 +50,35 @@ pipeline = transformers.pipeline(
 
 )
 
-langchain_llm = HuggingFacePipeline(pipeline=pipeline, model_kwargs={'temperature': 0})
+llm = HuggingFacePipeline(pipeline=pipeline, model_kwargs={'temperature': 0})
+embeddings = HuggingFaceEmbeddings(model_name='shibing624/text2vec-base-chinese', model_kwargs={'device': 'cuda'})
+loader = CSVLoader('data/employees.csv', encoding="utf-8", csv_args={'delimiter': ','})
 
-llm = LangchainLLM(langchain_llm=langchain_llm)
-df = Agent(
-    ["examples/data/Loan payments data.csv"],
-    config={"llm": llm, "enable_cache": False, "max_retries": 1},
+data = loader.load()
+CHROMA_SETTINGS = Settings(
+    anonymized_telemetry=False,
+    is_persistent=True,
 )
-response = df.chat("How many loans are from men and have been paid off?")
-print(response)
+
+ROOT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+
+PERSIST_DIRECTORY = f"{ROOT_DIRECTORY}/DB1"
+
+
+db = Chroma.from_documents(
+    data,
+    embeddings,
+    persist_directory=PERSIST_DIRECTORY,
+    client_settings=CHROMA_SETTINGS,
+)
+retriever = db.as_retriever()
+chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", return_source_documents=True,
+                                    retriever=retriever)
+
+query = "What is the Donald's  employee id?"
+
+result = chain(query)
+
+wrapped_text = textwrap.fill(result['result'], width=500)
+
+print(wrapped_text)
