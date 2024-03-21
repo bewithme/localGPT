@@ -105,4 +105,4 @@ def load_documents(source_dir: str) -> list[Document]:
 
 
 if __name__ == "__main__":
-    load_documents('APAAS-DATASET-2/谢佳/EAST5.0银保监发文内容')
+    load_documents('APAAS-DATASET-2/谢佳')
