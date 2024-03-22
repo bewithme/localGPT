@@ -1,12 +1,48 @@
-from langchain.chat_models import ChatOpenAI
-from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 
-# initialize LLM (we use ChatOpenAI because we'll later define a `chat` agent)
-llm = ChatOpenAI(
-    openai_api_key="OPENAI_API_KEY",
-    temperature=0,
-    model_name='gpt-3.5-turbo'
+from langchain.chains.conversation.memory import ConversationBufferWindowMemory
+from custom_tool import PythagorasTool
+
+from langchain import HuggingFacePipeline
+
+from transformers import AutoTokenizer
+from huggingface_hub.hf_api import HfFolder
+import transformers
+import torch
+
+HfFolder.save_token('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')
+
+model = "google/gemma-7b"
+
+
+tokenizer = AutoTokenizer.from_pretrained(model)
+
+pipeline = transformers.pipeline(
+
+    "text-generation",  # task
+
+    model=model,
+
+    tokenizer=tokenizer,
+
+    torch_dtype=torch.bfloat16,
+
+    trust_remote_code=True,
+
+    device_map="auto",
+
+    max_length=1000,
+
+    do_sample=True,
+
+    top_k=10,
+
+    num_return_sequences=1,
+
+    eos_token_id=tokenizer.eos_token_id
+
 )
+
+llm = HuggingFacePipeline(pipeline=pipeline, model_kwargs={'temperature': 0})
 
 # initialize conversational memory
 conversational_memory = ConversationBufferWindowMemory(
@@ -46,3 +82,5 @@ new_prompt = agent.agent.create_prompt(
 )
 
 agent.agent.llm_chain.prompt = new_prompt
+
+print(agent("can you calculate the hypotenuse of the triangle wiht adjacent_side of 3 mm and opposite_side of 4 mm "))
